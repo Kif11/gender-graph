@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Gender Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+  <div id="gender-graph" style="width:600px;height:250px;"></div>
+
+  <button type="button" id="updatePlot">Update Plot</button>
+
+  <div id="resultDiv"> </div>
+
+</body>
+
+<script>
+
+  function updatePlot() {
+    let genderGraph = document.getElementById('gender-graph');
+    // $("#gender-graph").empty();
+
+    $.ajax({url: "/graph", success: function(graphData){
+
+      var plotLayout = {
+        autosize: false,
+        width: 800,
+        height: 400,
+        margin: {
+          l: 50,
+          r: 50,
+          b: 100,
+          t: 100,
+          pad: 4
+        },
+        xaxis: {
+          autorange: true,
+          showgrid: false,
+          zeroline: false,
+          showline: false,
+          autotick: true,
+          ticks: '',
+          showticklabels: false
+        },
+        yaxis: {
+          autorange: true,
+          showgrid: false,
+          zeroline: false,
+          showline: false,
+          autotick: true,
+          ticks: '',
+          showticklabels: false
+        }
+      }
+
+      Plotly.plot(genderGraph, [{
+        x: graphData.xValues,
+        y: graphData.yValues,
+        mode: 'text',
+        text: graphData.words,
+        textposition: 'bottom',
+      }], plotLayout);
+    }});
+  }
+
+  $(document).ready(function () {
+    updatePlot();
+  });
+
+  $("#updatePlot").click(function() {
+    updatePlot();
+  });
+
+</script>
+
+</html>
