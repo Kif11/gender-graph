@@ -12,23 +12,17 @@
 
 <body>
 
-  <div id="gender-graph" style="width:600px;height:250px;"></div>
-
+  <div id="gender-graph"></div>
   <button type="button" id="updatePlot">Update Plot</button>
-
-  <div id="resultDiv"> </div>
 
 </body>
 
 <script>
 
-  function updatePlot() {
-    let genderGraph = document.getElementById('gender-graph');
-    // $("#gender-graph").empty();
-
-    $.ajax({url: "/graph", success: function(graphData){
-
-      var plotLayout = {
+  let genderGraph = document.getElementById('gender-graph');
+  
+  // Main layout for our gender plot
+  var plotLayout = {
         autosize: false,
         width: 800,
         height: 400,
@@ -59,17 +53,43 @@
         }
       }
 
-      Plotly.plot(genderGraph, [{
+  function initPlot() {
+      
+      // Create an empty plot
+      // Data will be populated throug updatePlot function
+      var plotlyGraphData = [{
+        x: [],
+        y: [],
+        text: [],
+        mode: 'text',
+        textposition: 'bottom',
+      }]
+
+      Plotly.plot(genderGraph, plotlyGraphData, plotLayout);
+  }
+
+
+  function updatePlot() {
+
+    $.ajax({url: "/graph", success: function(graphData){
+      
+      console.log('[D] Updating plot wiht data: ', graphData)
+      
+      var plotlyGraphData = [{
         x: graphData.xValues,
         y: graphData.yValues,
-        mode: 'text',
         text: graphData.words,
+        mode: 'text',
         textposition: 'bottom',
-      }], plotLayout);
-    }});
+      }];
+      
+      Plotly.newPlot(genderGraph, plotlyGraphData, plotLayout);
+      Plotly.redraw(genderGraph);
+    }}); // AJAX END
   }
 
   $(document).ready(function () {
+    initPlot();
     updatePlot();
   });
 
