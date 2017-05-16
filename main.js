@@ -11,6 +11,10 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 })
 
+app.get('/test', function (req, res) {
+  res.sendFile(__dirname + '/views/test.html');
+})
+
 app.get('/graph', function (req, res) {
 
   console.log('Reading scores data')
@@ -50,5 +54,5 @@ app.get('/graph', function (req, res) {
 let port = process.env.PORT || 5000;
 
 app.listen(port, function () {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 })
