@@ -3,24 +3,36 @@
 
 <head>
   <title>Gender Plot</title>
+
+  <!-- Scripts -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
 
-  <div id="gender-graph"></div>
-  <button type="button" id="updatePlot">Update Plot</button>
+  <div id="main-col">
+    <h1>Gender graph</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+    <div id="gender-graph"></div>
+    <button class="button" type="button" id="updatePlot">Update Plot</button>
+  </div>
 
 </body>
 
 <script>
 
   let genderGraph = document.getElementById('gender-graph');
-  
+
   // Main layout for our gender plot
   var plotLayout = {
         autosize: false,
@@ -54,7 +66,7 @@
       }
 
   function initPlot() {
-      
+
       // Create an empty plot
       // Data will be populated throug updatePlot function
       var plotlyGraphData = [{
@@ -71,10 +83,11 @@
 
   function updatePlot() {
 
+    // Send request to the server to fetch word scores
     $.ajax({url: "/graph", success: function(graphData){
-      
+
       console.log('[D] Updating plot wiht data: ', graphData)
-      
+
       var plotlyGraphData = [{
         x: graphData.xValues,
         y: graphData.yValues,
@@ -82,7 +95,7 @@
         mode: 'text',
         textposition: 'bottom',
       }];
-      
+
       Plotly.newPlot(genderGraph, plotlyGraphData, plotLayout);
       Plotly.redraw(genderGraph);
     }}); // AJAX END

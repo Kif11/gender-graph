@@ -4,6 +4,9 @@ var app = express()
 const fs = require('fs');
 const rl = require('readline');
 
+// Serve static files
+app.use(express.static('public'))
+
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 })
@@ -44,6 +47,8 @@ app.get('/graph', function (req, res) {
   });
 })
 
-app.listen(process.env.PORT, function () {
-  console.log(`Example app listening on port ${process.env.PORT}`);
+let port = process.env.PORT || 5000;
+
+app.listen(port, function () {
+  console.log(`Example app listening on port ${port}`);
 })
