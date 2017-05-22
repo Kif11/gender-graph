@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Kirill Kovalevskiy",
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
-    "range-fit": "^0.1.1"
+    "round-to": "^2.0.0"
   }
 }

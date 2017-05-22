@@ -1,71 +1,28 @@
-const fit = require('range-fit');
-const fs = require('fs');
-const rl = require('readline');
+const spawn = require('child_process').spawn;
 
-function remap( x, oMin, oMax, nMin, nMax ){
-  //range check
-  if (oMin == oMax){
-      console.log("Warning: Zero input range");
-      return None;
-  };
+let word = 'cat';
 
-  if (nMin == nMax){
-      console.log("Warning: Zero output range");
-      return None
-  }
+let genplot = spawn('gender-word-plots/src/genplot', ['-i', 'gender-word-plots/vectorbins/text8-vector.bin']);
 
-  //check reversed input range
-  var reverseInput = false;
-  oldMin = Math.min( oMin, oMax );
-  oldMax = Math.max( oMin, oMax );
-  if (oldMin != oMin){
-      reverseInput = true;
-  }
+genplot.stdin.write(word);
+genplot.stdin.end();
 
-  //check reversed output range
-  var reverseOutput = false;
-  newMin = Math.min( nMin, nMax )
-  newMax = Math.max( nMin, nMax )
-  if (newMin != nMin){
-      reverseOutput = true;
-  };
-
-  var portion = (x-oldMin)*(newMax-newMin)/(oldMax-oldMin)
-  if (reverseInput){
-      portion = (oldMax-x)*(newMax-newMin)/(oldMax-oldMin);
-  };
-
-  var result = portion + newMin
-  if (reverseOutput){
-      result = newMax - portion;
-  }
-
-  return result;
-}
-
-
-let graphData = {
-  words: [],
-  cell: []
-};
-
-let scoresFile = 'data/scores.txt'
-
-let readScoresStream = fs.createReadStream(scoresFile);
-
-let lineReader = rl.createInterface({
-  input: readScoresStream
+genplot.stdout.on('data', function(data) {
+    console.log('stdout: ' + data);
+    //Here is where the output goes
 });
 
-lineReader.on('line', line => {
-  let word, value;
-  [word, value] = line.split(' ');
+genplot.stderr.on('data', function(data) {
+    console.log('stderr: ' + data);
+    //Here is where the error output goes
+});
 
-  var newVal = remap(parseInt(value), -1, 1, 0, 1);
+genplot.on('close', function(code) {
+    console.log('closing code: ' + code);
+    //Here you can get the exit code of the script
+});
 
-  console.log(value, newVal);
-
-  graphData.words.push(word);
-  graphData.cell.push(value);
-
+genplot.on('error', (err) => {
+  console.log('Failed to start child process.');
+  console.log(err);
 });

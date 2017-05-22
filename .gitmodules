@@ -1,0 +1,3 @@
+[submodule "modules/gender-word-plots"]
+	path = modules/gender-word-plots
+	url = https://github.com/sneha-belkhale/gender-word-plots
