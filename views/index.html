@@ -2,120 +2,17 @@
 <html>
 
 <head>
-  <title>Test</title>
+  <title>Gender Graph</title>
 
   <!-- Scripts -->
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
+
+  <!-- Styles -->
   <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
-
-  <style>
-
-    html * {
-      font-family: 'Roboto', sans-serif;
-      font-family: 'Roboto Slab', serif;
-    }
-
-    p {
-      font-size: 12px;
-      text-align: justify;
-      text-justify: inter-word;
-    }
-
-    .button {
-        background-color: #4CAF50; /* Green */
-        border: none;
-        color: white;
-        padding: 3px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 12px;
-    }
-
-    #add-word-btn {
-      position: relative;
-    }
-
-    #center-div {
-      margin: auto;
-      width: 50%;
-    }
-
-    #graph-canvas {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      overflow: hidden;
-      display: flex;
-    }
-
-    .word-bin {
-      padding: 10px;
-      flex-grow: 1;
-    }
-
-    .word {
-      position: relative;
-      font-size: 12px;
-    }
-
-    .word.new-word {
-      animation-name: new-word-anim;
-      animation-duration: 1s;
-    }
-
-    #graph-container {
-
-    }
-
-    #input-container {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    #input-container .input-item {
-      box-sizing: border-box;
-      flex-basis: 32%;
-    }
-
-    #input-container .status-bar {
-      font-size: 12px;
-    }
-
-    #graph-header {
-      display: flex;
-      top: 50%;
-      z-index: 2;
-      padding: 3px;
-    }
-
-    .word-title {
-      width: 100%;
-      font-size: 20px;
-      opacity: 0.4;
-      /*color: white;*/
-    }
-
-    #to-word-title {
-      text-align: right;
-    }
-
-    @keyframes new-word-anim {
-        from {
-          opacity: 0;
-          color: rgb(210, 230,255);
-          font-size: 30px;
-        }
-        to {
-          opacity: 1;
-          color: inherit;
-          font-size: inherit;
-        }
-    }
-
-  </style>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
 
 </head>
 
@@ -123,9 +20,13 @@
 
   <div id="main-col">
     <div id="center-div">
-      <h1>Lorem upsum</h1>
+      <h1>Gender graph</h1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
 
       <div id=graph-container>
@@ -136,12 +37,14 @@
           <div class="input-item status-bar"></div>
         </div>
 
-        <div id="graph-canvas"></div>
-
+        <!--
         <div id="graph-header">
           <div class="word-title" id="from-word-title">HE</div>
           <div class="word-title" id="to-word-title">SHE</div>
         </div>
+        -->
+
+        <div id="graph-canvas"></div>
 
       </div>
 
@@ -194,8 +97,8 @@
     return Math.min.apply(null, numArray);
   }
 
-  function scoreToBin(score) {
-    var numBins = 10;
+  function scoreToBin(score, numBins) {
+    numBins = numBins || 10;
     // Find max and min score of our default array
     var maxScore = maxa(scores);
     var minScore = mina(scores);
@@ -204,15 +107,22 @@
     return Math.round(score);
   }
 
+  function printStatus(message) {
+    var statusBar = $("#input-container .status-bar");
+
+    statusBar.empty();
+    statusBar.append(message);
+  }
+
   function addWord(word, score) {
     var bin = scoreToBin(score);
-    var statusBar = $("#input-container .status-bar");
-    statusBar.empty();
 
     if (word === null) {
       console.log('[!] Word was not found in the traning data');
-      statusBar.append(`Word was not found in the traning data`)
+      printStatus('Word was not found in the traning data');
       return
+    } else {
+      printStatus('')
     }
 
     // Append data to our global state
@@ -242,7 +152,7 @@
   }
 
 
-  function initBins() {
+  function initBins(numBins) {
 
     var graphCanvas = $("#graph-canvas");
     var wordBins = {};
@@ -250,7 +160,7 @@
     // Place every word in coresponding bin base on the word score
     for (var i = 0; i < words.length; i++) {
       var word = words[i];
-      var bin = scoreToBin(scores[i]);
+      var bin = scoreToBin(scores[i], numBins);
 
       if (bin in wordBins) {
         wordBins[bin].push(word);
@@ -263,10 +173,12 @@
   }
 
 
-  function initPlot() {
+  function initPlot(numBins) {
 
     var graphCanvas = $("#graph-canvas");
-    var wordBins = initBins();
+    var wordBins = initBins(numBins);
+
+    graphCanvas.empty();
 
     console.log("[D] Initializin plot with word bins: ", wordBins);
 
@@ -281,17 +193,37 @@
   }
 
   $( document ).ready(function() {
-    initPlot();
+    // media query event handler
+    if (matchMedia) {
+      var mq = window.matchMedia("(min-width: 1000px)");
+      mq.addListener(WidthChange);
+      WidthChange(mq);
+    }
+
+    // media query change
+    function WidthChange(mq) {
+      if (mq.matches) {
+        // window width is at least 1000px
+        initPlot(8);
+      } else {
+        // window width is less than 1000px
+        initPlot(3);
+      }
+
+    }
   });
 
   // Register add word button callback
   $("#add-word-btn").click(function() {
     // Fetch new word from the input field
-    var newWord = $("#new-word-input").val();
+    var newWordInput = $("#new-word-input");
+    var newWord = newWordInput.val();
+
 
     // Do some checks before doing anithing
     if (words.indexOf(newWord) !== -1) {
-      console.log("[!] This word already on the graph");
+      console.log("[!] This word is already on the graph");
+      printStatus('This word is already on the graph');
       //TODO Higlight it!
       return
     }
@@ -299,6 +231,9 @@
     // Fetch the score for the word from the server
     // and add it to the plot
     fetchScore(newWord, addWord);
+
+    // Clear input field
+    newWordInput.val("")
   });
 
   $("#new-word-input").keyup(function(event){

@@ -6,13 +6,7 @@ html * {
 p {
   font-size: 12px;
   text-align: justify;
-  text-justify: inter-word;
-}
-
-#main-col {
-  margin: auto;
-  width: 50%;
-  padding: 10px;
+  margin: 0 0 20px 0;
 }
 
 .button {
@@ -24,4 +18,97 @@ p {
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
+}
+
+#add-word-btn {
+  position: relative;
+}
+
+#center-div {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: auto;
+}
+
+#graph-canvas {
+  padding-bottom: 10px;
+  overflow: hidden;
+  display: flex;
+}
+
+.word-bin {
+  padding: 10px;
+  flex-grow: 1;
+}
+
+.word {
+  position: relative;
+  font-size: 12px;
+}
+
+.word.new-word {
+  animation-name: new-word-anim;
+  animation-duration: 1s;
+}
+
+#graph-container {
+
+}
+
+#input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#input-container .input-item {
+  box-sizing: border-box;
+  flex-basis: 32%;
+  margin-bottom: 10px;
+}
+
+#input-container .status-bar {
+  font-size: 12px;
+}
+
+#graph-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.word-title {
+  font-size: 20px;
+  /*margin-top: 200px;*/
+  opacity: 0.4;
+  flex-grow: 1
+  /*color: white;*/
+}
+
+#to-word-title {
+  text-align: right;
+}
+
+@keyframes new-word-anim {
+    from {
+      opacity: 0;
+      color: rgb(210, 230,255);
+      font-size: 30px;
+    }
+    to {
+      opacity: 1;
+      color: inherit;
+      font-size: inherit;
+    }
+}
+
+@media (max-width: 1200px) {
+  #center-div {
+    width: 80%;
+  }
+}
+
+@media (max-width: 1000px) {
+  #center-div {
+    width: 100%;
+  }
 }
