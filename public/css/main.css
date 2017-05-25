@@ -4,20 +4,33 @@ html * {
 }
 
 p {
-  font-size: 12px;
+  font-size: 14px;
   text-align: justify;
-  margin: 0 0 20px 0;
+  margin: 0 0 10px 0;
 }
 
 .button {
-    background-color: #4CAF50; /* Green */
+    background-color: rgb(160, 260, 220);
     border: none;
     color: white;
     padding: 3px 32px;
+    height: 25px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 12px;
+}
+
+select {
+  border: 1px solid #111;
+  background: transparent;
+  width: 150px;
+  padding: 2px 35px 2px 5px;
+  border: 1px solid #ccc;
+  height: 25px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url(https://maxcdn.icons8.com/Share/icon/Data//scatter_plot1600.png) 96% / 15% no-repeat #eee;
 }
 
 #add-word-btn {
@@ -44,7 +57,7 @@ p {
 
 .word {
   position: relative;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .word.new-word {
@@ -58,12 +71,13 @@ p {
 
 #input-container {
   display: flex;
+  font-size: 12px;
   justify-content: space-between;
 }
 
 #input-container .input-item {
   box-sizing: border-box;
-  flex-basis: 32%;
+  flex-basis: 25%;
   margin-bottom: 10px;
 }
 
@@ -82,6 +96,10 @@ p {
   opacity: 0.4;
   flex-grow: 1
   /*color: white;*/
+}
+
+.bin-header {
+  margin-bottom: 10px;
 }
 
 #to-word-title {
