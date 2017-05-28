@@ -9,20 +9,65 @@
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
 
   <style>
 
-    body {
-      background-color: powderblue;
-    }
-
-    h1 {
-      color: blue;
+    html * {
+      font-family: 'Roboto', sans-serif;
+      font-family: 'Roboto Slab', serif;
     }
 
     p {
-      color: red;
-      display: inline;
+      font-size: 12px;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    #center-div {
+      margin: auto;
+      width: 50%;
+    }
+
+    #graph-canvas {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .word-bin {
+      padding: 10px;
+      height: 300px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .word {
+      position: relative;
+      font-size: 12px;
+    }
+
+    #graph-container {
+
+    }
+
+    #graph-header {
+      z-index: 2;
+      position: relative;
+      top: -210px;
+      opacity: 0.1;
+      padding: 10px;
+      display: flex;
+    }
+
+    .word-title {
+      width: 100%;
+      font-size: 50px;
+    }
+
+    #to-word-title {
+      text-align: right;
     }
 
   </style>
@@ -32,21 +77,75 @@
 <body>
 
   <div id="main-col">
-    <h1>This is test</h1>
-    <div id="main-graph"></div>
+    <div id="center-div">
+      <h1>Lorem upsum</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <div id=graph-container>
+
+        <div id="graph-canvas"></div>
+
+        <div id="graph-header">
+          <div class="word-title" id="from-word-title">HE</div>
+          <div class="word-title" id="to-word-title">SHE</div>
+        </div>
+
+      </div>
+
+    </div>
   </div>
 
 </body>
 
 <script>
 
-  var scores = [0.15, 0.21, 0.14, 0.29, 0.8, 0.91, 0.823, 0.67, 0.66, 0.33, 0.2, 0.3]
-  var mainGraph = $("#main-graph");
+  var words = [
+    "tanning", "ultrasound", "modeling", "beautiful", "victims", "looks", "sewing", "dress", "dance", "nuclear", "quit", "pageant", "earrings", "divorce", "firms", "yard", "seeking", "guru", "salon", "breasts", "dancers", "thigh", "lust", "user", "identity", "busy", "hoped", "command", "housing", "caused", "debate", "voters", "governor", "sharply", "rule", "builder", "drafted", "brilliant", "genius", "cocky", "journeyman", "buddies", "war", "fight", "guns", "confusion", "rape", "sex", "sexy", "fat", "curvy", "slap", "leader", "programming", "power", "funny", "smart", "weak", "bitch", "gossip", "shrill", "dramatic", "cold", "quiet", "teeth", "mind", "thought", "police", "deity", "hands", "butt", "sociopath", "surrender", "villain", "heart", "love", "bdsm", "eat", "diet", "melee", "videogames", "sports", "religion", "emotional", "murder"
+  ]
+  var scores = [
+    0.036944, -0.005386, -0.044093, 0.112165, 0.041059, 0.048500, 0.058528, 0.106063, 0.113794, 0.041656, 0.069449, 0.073771, 0.058820, 0.166020, 0.013905, 0.064543, -0.048731, -0.076592, -0.017507, 0.156107, 0.104827, 0.060040, 0.067039, 0.013342, 0.062416, 0.061403, -0.117507, -0.058742, 0.037337, 0.033283, 0.030980, -0.012075, 0.013849, 0.014710, -0.075383, -0.067903, -0.050437, -0.050463, -0.036999, 0.010637, -0.033319, -0.022620, -0.014427, -0.052957, 0.047169, 0.043900, 0.153581, 0.145402, 0.104346, 0.053543, 0.095194, 0.005196, -0.005262, 0.029472, 0.009334, 0.035476, 0.096646, 0.106603, 0.115634, 0.034383, 0.027681, 0.087752, 0.029178, 0.105715, 0.151549, 0.007681, -0.028619, -0.055932, -0.034441, 0.022391, 0.078857, -0.044756, -0.051318, 0.101716, 0.079884, 0.136954, 0.048953, 0.035825, -0.039486, 0.065160, 0.062769, 0.057633, 0.015498, 0.077440, 0.110927
+  ]
+  var graphCanvas = $("#graph-canvas");
+  var wordBins = {};
 
-  scores.forEach(function (score) {
-    mainGraph.append( "<p>" + score + "</p>" );
+  function round (number, precision) {
+    var factor = Math.pow(10, precision);
+    var tempNumber = number * factor;
+    var roundedTempNumber = Math.round(tempNumber);
+    return roundedTempNumber / factor;
+  };
+
+  function fit (x, min, max, a, b) {
+    /*
+        Source
+          http://stackoverflow.com/questions/5294955/how-to-scale-down-a-range-of-numbers-with-a-known-min-and-max-value
+
+               (b-a)(x - min)
+        f(x) = --------------  + a
+                max - min
+
+        Where min, max are old min and old max
+        a,b - new min and new max
+
+    */
+    return (((b-a) * (x-min)) / (max-min)) + a;
+  }
+
+  function maxa(numArray) {
+    // Get max out of numeric array
+    return Math.max.apply(null, numArray);
+  }
+
+  function mina(numArray) {
+    // Get min out of numeric array
+    return Math.min.apply(null, numArray);
+  }
+
+  $( document ).ready(function() {
+    updatePlot();
   });
-
 </script>
 
 </html>

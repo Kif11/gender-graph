@@ -15,8 +15,13 @@
   <script src="js/cookie.js"></script>
 
   <!-- Styles -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/main.css">
+
+  <!-- Icon -->
+  <link rel="icon" href="/img/favicon.png" type="image/x-icon">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
 
 </head>
 
@@ -26,37 +31,35 @@
     <div id="center-div">
       <h1>Gender graph</h1>
 
-      <div id="description">
+      <div id="higlight">
         <p>
         Ever wonder if we can quantify the gender bias in society?
         The popular neural network model, word2vec, forms quantitative word associations based on a given text sample. By looking at which words are commonly associated with men and women, we can reveal gender biases found in the media sources used to train the model.
         </p>
-        <p>
-        Observing this chart clearly reveals that the media commonly associates toxic words with women. We consume this media every day, and are therefore subliminally consuming these biases every day. Much of our community believes that feminism isn’t relevant anymore as women and men have “equal rights”. Hopefully this scientific evidence will be concrete proof of the disparities that exist in the way we perceive gender, and that we still have a long way to go.
-        Select a media source and quantify a bias below.
-        </p>
+      </div>
+      <a href=# id="read-more-btn">Read more <strong>></strong></a>
+      <div id="read-more-block" style="display:none">
+        <div id="description">
+          <p>
+          Observing this chart clearly reveals that the media commonly associates toxic words with women. We consume this media every day, and are therefore subliminally consuming these biases every day. Much of our community believes that feminism isn’t relevant anymore as women and men have “equal rights”. Hopefully this scientific evidence will be concrete proof of the disparities that exist in the way we perceive gender, and that we still have a long way to go.
+          Select a media source and quantify a bias below.
+          </p>
+        </div>
+        <div id="model-info">Reddit model trained on ~1.7 billion publicly available Reddit comments. It's include 2 milions unique words</div>
       </div>
 
       <div id=graph-container>
-
         <div id="input-container">
-          <select name="w2v_models">
-            <option selected disabled>Choose your model</option>
-            <option value="wiki">Wikipedia</option>
+          <select class="input-item" id="model-dropdown">
+            <option value="wiki">Wikipedia </option>
             <option value="reddit">Reddit</option>
             <option value="gnews">Google News</option>
           </select>
           <button class="input-item button" type="button" id="add-word-btn">Add Word</button>
           <input class="input-item input-box" id="new-word-input" type="text" name="newWord">
+          <div class="spinner"></div>
           <div class="input-item status-bar"></div>
-        </div>
-
-        <!--
-        <div id="graph-header">
-          <div class="word-title" id="from-word-title">HE</div>
-          <div class="word-title" id="to-word-title">SHE</div>
-        </div>
-        -->
+        </div> <!-- End of input container -->
 
         <div id="graph-canvas"></div>
 
@@ -67,263 +70,6 @@
 
 </body>
 
-<script>
-
-  // Data models descriptions
-
-  // Wiki - English Wikipedia dump on Mar. 3, 2006. Total number of words is 17,005,208.
-  // Reddit - vector bin trained on ~1.7 billion publicly available Reddit comments from May 2015.
-
-  // Global plot state. Initial data is precomputed for faster page load.
-  // Alway udate this when eding or removing words from the plot
-  var words = [
-    "tanning", "ultrasound", "modeling", "beautiful", "victims", "looks", "sewing",
-    "dress", "dance", "nuclear", "quit", "pageant", "earrings", "divorce", "firms",
-    "yard", "seeking", "guru", "salon", "breasts", "dancers", "thigh", "lust", "user",
-    "identity", "busy", "hoped", "command", "housing", "caused", "debate", "voters",
-    "governor", "sharply", "rule", "builder", "drafted", "brilliant", "genius",
-    "cocky", "journeyman", "buddies", "war", "fight", "guns", "confusion", "rape",
-    "sex", "sexy", "fat", "curvy", "slap", "leader", "programming", "power", "funny",
-    "smart", "weak", "bitch", "gossip", "shrill", "dramatic", "cold", "quiet", "teeth",
-    "mind", "thought", "police", "deity", "hands", "butt", "sociopath", "surrender",
-    "villain", "heart", "love", "bdsm", "eat", "diet", "melee", "videogames", "sports",
-    "religion", "emotional", "murder"
-  ]
-  var scores = [
-    0.036944, -0.005386, -0.044093, 0.112165, 0.041059, 0.048500, 0.058528, 0.106063,
-    0.113794, 0.041656, 0.069449, 0.073771, 0.058820, 0.166020, 0.013905, 0.064543,
-    -0.048731, -0.076592, -0.017507, 0.156107, 0.104827, 0.060040, 0.067039, 0.013342,
-    0.062416, 0.061403, -0.117507, -0.058742, 0.037337, 0.033283, 0.030980, -0.012075,
-    0.013849, 0.014710, -0.075383, -0.067903, -0.050437, -0.050463, -0.036999, 0.010637,
-    -0.033319, -0.022620, -0.014427, -0.052957, 0.047169, 0.043900, 0.153581, 0.145402,
-    0.104346, 0.053543, 0.095194, 0.005196, -0.005262, 0.029472, 0.009334, 0.035476,
-    0.096646, 0.106603, 0.115634, 0.034383, 0.027681, 0.087752, 0.029178, 0.105715,
-    0.151549, 0.007681, -0.028619, -0.055932, -0.034441, 0.022391, 0.078857, -0.044756,
-    -0.051318, 0.101716, 0.079884, 0.136954, 0.048953, 0.035825, -0.039486, 0.065160,
-    0.062769, 0.057633, 0.015498, 0.077440, 0.110927
-  ]
-
-  // TODO(Kirill): This what called session cookies
-  // it will be clear after user exit his brouser
-  // See https://stackoverflow.com/questions/8733025/setting-persistent-cookies-with-javascript
-  // for how to implement permanent cookies
-  if (Cookies.get('words') === undefined) {
-    // User open website for the first time
-    // Store default word list and scores in user's cookies
-    Cookies.set('words', words);
-    Cookies.set('scores', scores);
-  } else {
-    // Returning user
-    // Get his personal set of words and score
-    words = JSON.parse(Cookies.get('words'));
-    scores = JSON.parse(Cookies.get('scores'));
-  }
-
-  var numOfBins = 10;
-
-  function round (number, precision) {
-    var factor = Math.pow(10, precision);
-    var tempNumber = number * factor;
-    var roundedTempNumber = Math.round(tempNumber);
-    return roundedTempNumber / factor;
-  };
-
-  function fit (x, min, max, a, b) {
-    /*
-        Source
-          http://stackoverflow.com/questions/5294955/how-to-scale-down-a-range-of-numbers-with-a-known-min-and-max-value
-
-               (b-a)(x - min)
-        f(x) = --------------  + a
-                max - min
-
-        Where min, max are old min and old max
-        a,b - new min and new max
-
-    */
-    return (((b-a) * (x-min)) / (max-min)) + a;
-  }
-
-  function maxa(numArray) {
-    // Get max out of numeric array
-    return Math.max.apply(null, numArray);
-  }
-
-  function mina(numArray) {
-    // Get min out of numeric array
-    return Math.min.apply(null, numArray);
-  }
-
-  function scoreToBin(score, numBins) {
-    numBins = numBins || 10;
-    // Find max and min score of our default array
-    var maxScore = maxa(scores);
-    var minScore = mina(scores);
-
-    var score = fit(score, minScore, maxScore, 0, numBins)
-    return Math.round(score);
-  }
-
-  function printStatus(message) {
-    var statusBar = $("#input-container .status-bar");
-
-    statusBar.empty();
-    statusBar.append(message);
-  }
-
-  function addWord(word, score) {
-    var bin = scoreToBin(score, numBins);
-
-    if (word === null) {
-      console.log('[!] Word was not found in the traning data');
-      printStatus('Word was not found in the traning data');
-      return
-    } else {
-      printStatus('')
-    }
-
-    console.log("Adding new word:", word, "to bin", bin);
-
-    // Append data to our global state
-    words.push(word);
-    scores.push(score);
-
-    // Update user cookies
-    Cookies.set('words', words);
-    Cookies.set('scores', scores);
-
-    // Select apropriate bit to place word into
-    var binDiv = $(`#bin-${bin}`);
-    binDiv.append(`<div class="word new-word">${word}</div>`);
-  }
-
-  function fetchScore(word, callback) {
-
-    // Sent sent this word to the server
-    $.ajax({
-      url: "/addword",
-      data: {
-        newWord: word
-      },
-      success: function (res) {
-        // On succes we should recieve the word score from the server or null if not found
-
-        console.log("[D] Got response: ", res);
-        callback(res.word, res.xValue)
-      }
-    });
-  }
-
-
-  function initBins(numBins) {
-
-    var graphCanvas = $("#graph-canvas");
-    var wordBins = {};
-
-    // Place every word in coresponding bin base on the word score
-    for (var i = 0; i < words.length; i++) {
-      var word = words[i];
-      var bin = scoreToBin(scores[i], numBins);
-
-      if (bin in wordBins) {
-        wordBins[bin].push(word);
-      } else {
-        wordBins[bin] = [];
-        wordBins[bin].push(word);
-      }
-    }
-    return wordBins;
-  }
-
-
-  function initPlot() {
-
-    var graphCanvas = $("#graph-canvas");
-    var wordBins = initBins(numBins);
-
-    graphCanvas.empty();
-
-    console.log("[D] Initializin plot with word bins: ", wordBins);
-
-    var levelNames8 = {0: 'So HE', 1: 'Very HE', 2: 'HE', 3: 'A bit HE', 4: 'IT', 5: 'A bit SHE', 6: 'SHE', 7: 'Very SHE', 8: 'So SHE'};
-    var levelNames4 = {0: 'So HE', 1: 'Very HE', 2: 'IT', 3: 'Very SHE', 4: 'So SHE'};
-
-    // This is where we generate and display plot bins
-    for (score in wordBins) {
-
-      var binColor = parseInt(fit(score, 0, 10, 160, 36));
-      graphCanvas.append(`<div class="word-bin" id=bin-${score} style="background-color: rgb(${binColor}, ${binColor+100}, 240);"></div>`);
-
-      if (numBins === 8) {
-        var levelNames = levelNames8;
-      } else if (numBins === 4) {
-        var levelNames = levelNames4;
-      }
-
-      // Append bin headers
-      $(`#bin-${score}`).append(`<div class="bin-header">${levelNames[score]}</div>`);
-
-      // Place our words into bins
-      for (var i = 0; i < wordBins[score].length; i++) {
-          $(`#bin-${score}`).append(`<div class="word">${wordBins[score][i]}</div>`);
-      }
-
-    }
-  }
-
-  $( document ).ready(function() {
-
-    // media query event handler
-    if (matchMedia) {
-      var mq = window.matchMedia("(min-width: 1000px)");
-      mq.addListener(WidthChange);
-      WidthChange(mq);
-    }
-
-    // media query change
-    function WidthChange(mq) {
-      if (mq.matches) {
-        // window width is at least 1000px
-        numBins = 8;  // Update global bin count
-        initPlot();
-      } else {
-        // window width is less than 1000px
-        numBins = 4;
-        initPlot();
-      }
-
-    }
-  });
-
-  // Register add word button callback
-  $("#add-word-btn").click(function() {
-    // Fetch new word from the input field
-    var newWordInput = $("#new-word-input");
-    var newWord = newWordInput.val();
-
-
-    // Do some checks before doing anithing
-    if (words.indexOf(newWord) !== -1) {
-      console.log("[!] This word is already on the graph");
-      printStatus('This word is already on the graph');
-      //TODO Higlight it!
-      return
-    }
-
-    // Fetch the score for the word from the server
-    // and add it to the plot
-    fetchScore(newWord, addWord);
-
-    // Clear input field
-    newWordInput.val("")
-  });
-
-  $("#new-word-input").keyup(function(event){
-    if(event.keyCode == 13){
-        $("#add-word-btn").click();
-    }
-  });
-
-</script>
+<script src="js/index.js"></script>
 
 </html>
