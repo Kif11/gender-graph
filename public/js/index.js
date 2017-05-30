@@ -87,7 +87,7 @@ function addWordsToGraph(words) {
     userWords.push(i);
     // Select apropriate bin to place word into
     var binDiv = $(`#bin-${i.bin}`);
-    binDiv.append(`<div class="word ${i.word} new-word">${i.word}</div>`);
+    binDiv.append(`<div class="graph-word ${i.word} new-word">${i.word}</div>`);
   });
 
   if (notFound.length >= 1) {
@@ -128,7 +128,7 @@ function initPlot(words) {
     if (i.bin === -1) {
       return;
     }
-    $(`#bin-${i.bin}`).append(`<div class="word ${i.word}">${i.word}</div>`);
+    $(`#bin-${i.bin}`).append(`<div class="graph-word ${i.word}">${i.word}</div>`);
   });
 }
 
@@ -136,6 +136,32 @@ function initPlot(words) {
 function updateModel (words, model) {
   fetchScores(words, model, initPlot);
 };
+
+
+function handleExpandClick(item) {
+  var elem = $(item);
+  var targetId = elem.attr('target');
+
+  if (targetId === undefined) {
+    console.log('[-] Target id is not defined!');
+    return;
+  }
+
+  var targetElem = $(`#${targetId}`);
+
+  if (targetElem.length === 0) {
+    console.log('Can not find element with id %s', targetElem);
+    return;
+  }
+
+  if (! targetElem.is(':visible')) {
+    targetElem.show();
+    elem.text('Hide ^');
+  } else {
+    targetElem.hide();
+    elem.text(elem.attr('defaultText'));
+  }
+}
 
 var modelDropdown = $("#model-dropdown");
 
@@ -164,6 +190,13 @@ $( document ).ready(() => {
       updateModel(userWords, model);
     }
   }
+
+
+  $('.expander-btn').each((i, obj) => {
+    var defaultText = obj.getAttribute('defaultText');
+    // debugger;
+    obj.text = defaultText;
+  });
 });
 
 
@@ -174,16 +207,23 @@ $("#add-word-btn").click(() => {
   var inputString = userWordInput.val().trim();
 
   if (inputString.length < 1) {
-    printStatus('Please enter a word');
+    printStatus('please enter a word');
     return
   }
   var words = [];
   inputString.split(' ').forEach((word) => {
 
-    var wordDiv = $(`.word.${word}`);
+    console.log('Processing', word);
+
+    if (! /^[ a-z]+$/i.test(word)) {
+      printStatus('characters only!');
+      return
+    }
+
+    var wordDiv = $(`.graph-word.${word}`);
     // Check if this word alredy on the graph
     if (wordDiv.length) {
-      // console.log("[!] This word is already on the graph");
+      console.log("[!] This word is already on the graph");
       // printStatus('This word is already on the graph');
       wordDiv.addClass("new-word");
       setTimeout(function () {
@@ -213,13 +253,33 @@ $("#new-word-input").keyup((event) => {
   }
 });
 
-// Handle read more button click
-var readMoreBtn = $("#read-more-btn");
-readMoreBtn.click(() => {
-  var readMoreBlock = $("#read-more-block");
-  readMoreBlock.show();
-  readMoreBtn.hide();
-});
+
+// $(".expander-btn").on( "click", () => {
+//   console.log($(this));
+//   debugger;
+//   var elem = this;
+//   var targetId = elem.attr('target');
+//
+//   if (targetId === undefined) {
+//     console.log('[-] Target id is not defined!');
+//     return;
+//   }
+//
+//   var targetElem = $(`#${targetId}`);
+//
+//   if (targetElem.length === 0) {
+//     console.log('Can not find element with id %s', targetElem);
+//     return;
+//   }
+//
+//   if (! targetElem.is(':visible')) {
+//     targetElem.show();
+//     elem.text('Hide ^');
+//   } else {
+//     targetElem.hide();
+//     elem.text(expBtn.attr('defaultText'));
+//   }
+// });
 
 // Model dropdown event
 modelDropdown.change(() => {

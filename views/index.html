@@ -33,20 +33,43 @@
 
       <div id="higlight">
         <p>
-        Ever wonder if we can quantify the gender bias in society?
-        The popular neural network model, word2vec, forms quantitative word associations based on a given text sample. By looking at which words are commonly associated with men and women, we can reveal gender biases found in the media sources used to train the model.
+          Ever wonder if we can quantify a gender bias in society?
+        </p>
+        <p>
+          Using machine learning, we can generate word associations present in a given media source.
+          By looking at those assotiations we can tell how closely words are related to women or men.
+          The Gender Graph project allows users to plot where words lie on a scale of "he" to "she" based on the selected media source.
+        </p>
+        <p>
+          Enter your words and observe the differences that exist in the way we perceive gender.
         </p>
       </div>
-      <a href=# id="read-more-btn">Read more <strong>></strong></a>
-      <div id="read-more-block" style="display:none">
+
+      <div class="expandable-block" id="read-more-intro" style="display:none">
         <div id="description">
+          <h2>Manifesto</h2>
           <p>
-          Observing this chart clearly reveals that the media commonly associates toxic words with women. We consume this media every day, and are therefore subliminally consuming these biases every day. Much of our community believes that feminism isn’t relevant anymore as women and men have “equal rights”. Hopefully this scientific evidence will be concrete proof of the disparities that exist in the way we perceive gender, and that we still have a long way to go.
-          Select a media source and quantify a bias below.
+            Observing this chart clearly reveals that the media commonly associates toxic
+            words with women. We consume this media every day therefore subliminally
+            inherit these biases. Much of our community believes that feminism isn’t
+            relevant anymore as women and men have “equal rights”. Hopefully this scientific
+            evidence will be concrete proof of the disparities that exist in the way we perceive
+            gender, and that we still have a long way to go.
           </p>
         </div>
-        <div id="model-info">Reddit model trained on ~1.7 billion publicly available Reddit comments. It's include 2 milions unique words</div>
+        <div id="model-info">
+          <h2>Traning sources</h2>
+
+          <p>The Gender Graph Project currently has three word2vec models trained</p>
+
+          <li><a href="http://mattmahoney.net/dc/textdata">Wiki</a> is the dump of English Wikipedia which include 70 000 unique words. This dataset is also know as text8</li>
+          <li><a href="https://github.com/linanqiu/reddit-dataset"> Reddit </a> include on ~1.7 billion publicly available Reddit comments. It's include 2 milions unique words</li>
+          <li><a href="http://www.softnet.tuc.gr/~ioannou/newsarticles.html">Goole News</a> includes 94 829 news artiles, posted in Google News website</li>
+
+
+        </div>
       </div>
+      <a href="javascript: void(0)" class="expander-btn" target="read-more-intro" defaultText="Read more >" onClick="handleExpandClick(this)"></a>
 
       <div id=graph-container>
         <div id="input-container">
@@ -65,7 +88,42 @@
 
       </div>
 
-    </div>
+
+      <div id="how-it-works-section" style="display:none">
+        <h1>How does it work?</h1>
+
+        <p>
+          In the word2vec model, each word has a position in a multidimensional
+          vector space. In order to quantify if a word is more commonly associated
+          with women or men, we can find the position of the words “she” and “he” in the model,
+          find the vector direction between them, and project other words onto this vector
+          using simple vector properties such as the dot product.
+        </p>
+
+        <p>
+          The length of the projection onto this axis gives us an association score,
+          where values closer to 0.0 are closer to “he” in the model,
+          and values closer to 1.0 are closer and more commonly associated with “she”.
+        </p>
+
+        <div class="video-container">
+          <video id="vector-projections-video" autoplay loop>
+            <source src="mov/vector_projections.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+      <a href="javascript: void(0)" class="expander-btn" target="how-it-works-section" defaultText="How does it work? >" onClick="handleExpandClick(this)"></a>
+
+
+      <div id="credits">
+        Created by <a href="https://snehabelkhale.wordpress.com/">Sneha Belkhale</a> and <a href="https://kiko3d.wordpress.com/">Kirill Kovalevskiy</a><br>
+        <!--
+        Check our <a href="https://github.com/sneha-belkhale/gender-word-plots">command line tool</a> for generating scores for any word pair.
+        -->
+      </div>
+
+    </div> <!-- end of center-div -->
   </div>
 
 </body>

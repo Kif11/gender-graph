@@ -71,19 +71,23 @@ select {
   flex-grow: 1;
 }
 
-.word {
+.graph-word {
   position: relative;
   font-size: 100%;
   color: #4a4a4a;
 }
 
-.word.new-word {
+.graph-word.new-word {
   animation-name: new-word-anim;
   animation-duration: 1s;
 }
 
 #graph-container {
 
+}
+
+.expander-btn {
+  margin-bottom: 10px;
 }
 
 #input-container {
@@ -132,6 +136,19 @@ select {
 .btn-loading {
   cursor: not-allowed;
   animation: btn-load-anim 2s linear infinite;
+}
+
+.video-container {
+  overflow: hidden;
+  height: 500px;
+}
+
+#vector-projections-video {
+  margin-top: -123px;
+}
+
+#credits {
+  margin-top: 20px;
 }
 
 @keyframes btn-load-anim {

@@ -22,7 +22,6 @@ var dm = {
     wordScoresFile: 'scores/wiki.json',
     wordScores: {},  // This is to store word-score pair for all of the words in the selected datasets
     scoreRange: [0.44, 0.59],  // Empirical values to provide even graph distribution
-    userWords: []
   },
   reddit: {
     descriptions: "~1.7 billion publicly available Reddit comments",
@@ -31,7 +30,6 @@ var dm = {
     wordScoresFile: 'scores/reddit.json',
     wordScores: {},
     scoreRange: [-0.3, 0.3],
-    userWords: []
   },
   gnews: {
     descriptions: "Google News articles",
@@ -40,10 +38,11 @@ var dm = {
     wordScoresFile: 'scores/gnews.json',
     wordScores: {},
     scoreRange: [0.2, 0.84],
-    userWords: []
   }
 };
 
+// Load all unique scores files on startup
+loadScores();
 
 function fit (x, min, max, a, b) {
   /*
@@ -81,20 +80,23 @@ function scoreToBin(score, min, max, numBins) {
 }
 
 
-function loadScores(model) {
-  var scoreFile = dm[model].wordScoresFile;
-  if (isEmpty(dm[model].wordScores)) {
-    console.log('[+] Loading words scores for %s', model);
+function loadScores() {
+  // var scoreFile = dm[model].wordScoresFile;
+  // if (isEmpty(dm[model].wordScores)) {
+  //   console.log('[+] Loading words scores for %s', model);
+  //   dm[model].wordScores = JSON.parse(fs.readFileSync(scoreFile, 'utf8'));
+  // } else {
+  //   console.log('[D] Words scores for %s already loaded', model);
+  // }
+  for (model in dm) {
+    var scoreFile = dm[model].wordScoresFile;
+    console.log('[D] Loading %s', scoreFile);
     dm[model].wordScores = JSON.parse(fs.readFileSync(scoreFile, 'utf8'));
-  } else {
-    console.log('[D] Words scores for %s already loaded', model);
   }
 }
 
 
 function scoreWords(words, model) {
-
-  loadScores(model);
 
   words.forEach((i) => {
     var score = dm[model].wordScores[i.word];
@@ -145,7 +147,6 @@ app.post('/getscores', function (req, res) {
   let model = req.body.model;
   let numBins = req.body.numBins;
 
-  debugger;
   // Calculate scores and bins
   words = scoreWords(words, model);
   words = assignBins(words, model, numBins);
@@ -153,16 +154,9 @@ app.post('/getscores', function (req, res) {
   // Send words back to client
   res.send(words);
 })
-
-
-app.post('/changemodel', function (req, res) {
-  let words = req.body;
-  let scoredWords = scoreWords(words);
-  res.send(scoredWords);
-})
 // ROUTS END
 
-let port = process.env.PORT || 5000;
+let port = process.env.PORT || 8080;
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
