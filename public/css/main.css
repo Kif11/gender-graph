@@ -147,15 +147,6 @@ video {
   animation: btn-load-anim 2s linear infinite;
 }
 
-.video-container {
-  overflow: hidden;
-  height: 432px;
-}
-
-#vector-projections-video {
-  margin-top: -85px;
-}
-
 #credits {
   margin-top: 20px;
 }
