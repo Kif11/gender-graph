@@ -59,7 +59,7 @@ function loadEnds() {
 
 function fetchScores (words, model, callback) {
   loadStarts();
-  jQuery.ajax ({
+  jQuery.ajax({
     url: 'getscores',
     type: 'POST',
     data: JSON.stringify({words: words, model: model, numBins: numBins}),
@@ -138,6 +138,9 @@ function updateModel (words, model) {
 };
 
 
+/*
+  This function handle show more text link callback
+*/
 function handleExpandClick(item) {
   var elem = $(item);
   var targetId = elem.attr('target');
@@ -162,6 +165,7 @@ function handleExpandClick(item) {
     elem.text(elem.attr('defaultText'));
   }
 }
+
 
 var modelDropdown = $("#model-dropdown");
 
@@ -213,7 +217,8 @@ $("#add-word-btn").click(() => {
   var words = [];
   inputString.split(' ').forEach((word) => {
 
-    console.log('Processing', word);
+    // Convert word to lowercase
+    word = word.toLowerCase();
 
     if (! /^[ a-z]+$/i.test(word)) {
       printStatus('characters only!');
@@ -223,8 +228,8 @@ $("#add-word-btn").click(() => {
     var wordDiv = $(`.graph-word.${word}`);
     // Check if this word alredy on the graph
     if (wordDiv.length) {
-      console.log("[!] This word is already on the graph");
-      // printStatus('This word is already on the graph');
+      // console.log("[!] This word is already on the graph");
+      printStatus('already on the graph');
       wordDiv.addClass("new-word");
       setTimeout(function () {
            wordDiv.removeClass("new-word");
@@ -233,7 +238,7 @@ $("#add-word-btn").click(() => {
     }
 
     // Update user word list
-    words.push({word: word.toLowerCase(), score: -1, bin: -1});
+    words.push({word: word, score: -1, bin: -1});
   });
 
   if (words.length >= 1) {
@@ -253,33 +258,6 @@ $("#new-word-input").keyup((event) => {
   }
 });
 
-
-// $(".expander-btn").on( "click", () => {
-//   console.log($(this));
-//   debugger;
-//   var elem = this;
-//   var targetId = elem.attr('target');
-//
-//   if (targetId === undefined) {
-//     console.log('[-] Target id is not defined!');
-//     return;
-//   }
-//
-//   var targetElem = $(`#${targetId}`);
-//
-//   if (targetElem.length === 0) {
-//     console.log('Can not find element with id %s', targetElem);
-//     return;
-//   }
-//
-//   if (! targetElem.is(':visible')) {
-//     targetElem.show();
-//     elem.text('Hide ^');
-//   } else {
-//     targetElem.hide();
-//     elem.text(expBtn.attr('defaultText'));
-//   }
-// });
 
 // Model dropdown event
 modelDropdown.change(() => {

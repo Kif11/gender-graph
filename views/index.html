@@ -13,6 +13,15 @@
   crossorigin="anonymous"></script>
   <!-- Using https://github.com/js-cookie/js-cookie -->
   <script src="js/cookie.js"></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-100222662-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 
   <!-- Styles -->
   <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -22,6 +31,9 @@
 
   <!-- Font -->
   <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
+
+  <!-- Emoji -->
+  <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
 
 </head>
 
@@ -41,7 +53,7 @@
           The Gender Graph project allows users to plot where words lie on a scale of "he" to "she" based on the selected media source.
         </p>
         <p>
-          Enter your words and observe the differences that exist in the way we perceive gender.
+          Enter your words and observe the differences that exist in the way we perceive gender. <i class="em em-couple"></i>
         </p>
       </div>
 
@@ -60,11 +72,11 @@
         <div id="model-info">
           <h2>Traning sources</h2>
 
-          <p>The Gender Graph Project currently has three word2vec models trained</p>
+          <p>The Gender Graph Project currently has three models trained</p>
 
           <li><a href="http://mattmahoney.net/dc/textdata">Wiki</a> is the dump of English Wikipedia which include 70 000 unique words. This dataset is also know as text8</li>
           <li><a href="https://github.com/linanqiu/reddit-dataset"> Reddit </a> include on ~1.7 billion publicly available Reddit comments. It's include 2 milions unique words</li>
-          <li><a href="http://www.softnet.tuc.gr/~ioannou/newsarticles.html">Goole News</a> includes 94 829 news artiles, posted in Google News website</li>
+          <li><a href="http://www.softnet.tuc.gr/~ioannou/newsarticles.html">Google News</a> includes 94 829 news artiles, posted in Google News website</li>
 
 
         </div>
@@ -90,20 +102,29 @@
 
 
       <div id="how-it-works-section" style="display:none">
+
         <h1>How does it work?</h1>
-
         <p>
-          In the word2vec model, each word has a position in a multidimensional
-          vector space. In order to quantify if a word is more commonly associated
-          with women or men, we can find the position of the words “she” and “he” in the model,
-          find the vector direction between them, and project other words onto this vector
-          using simple vector properties such as the dot product.
+          In order for computer to understand english words, they need to be
+          converted to numbers. In particular each word can be represented as a
+          point in multidimensional space. It can be roughly visualized in two dimensions.
         </p>
-
+        <video id="scater-words-video" autoplay loop>
+          <source src="mov/scattered_words.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
         <p>
-          The length of the projection onto this axis gives us an association score,
-          where values closer to 0.0 are closer to “he” in the model,
-          and values closer to 1.0 are closer and more commonly associated with “she”.
+          We use the word2vec tool to generate these word vectors based on semantic
+          relationships between words in a given text source. This collection of word
+          vectors is called a model. We wrote <i class="em em-octocat"></i> <a href="https://github.com/sneha-belkhale/gender-word-plots" target="_blank">custom tool</a> that uses this model to
+          score user words in relationship to given pair of words (in our case he and she).
+        </p>
+        <p>
+          In order to quantify if a word is more commonly associated with women
+          or men, we can find how far away this word is positioned from “she” and “he”.
+          Mathematically, it can be accomplished by finding the vector direction
+          between “she” and “he”, and projecting user words onto this vector using
+          simple vector properties such as the dot product.
         </p>
 
         <div class="video-container">
@@ -112,12 +133,24 @@
             Your browser does not support the video tag.
           </video>
         </div>
-      </div>
+
+        <p>
+          The length of the projection onto this axis gives us an association score,
+          where values closer to 0.0 are related to “he”, and values closer to 1.0 are related to “she”.
+        </p>
+        <p>
+          This approach give as very good pictures of semantic biases, however in reality
+          there are a lot of errors in the model. This errors happened due to ambiguous
+          and dirty data and imperfections of the algorithms.
+        </p>
+
+
+      </div> <!-- end of how it works section -->
       <a href="javascript: void(0)" class="expander-btn" target="how-it-works-section" defaultText="How does it work? >" onClick="handleExpandClick(this)"></a>
 
 
       <div id="credits">
-        Created by <a href="https://snehabelkhale.wordpress.com/">Sneha Belkhale</a> and <a href="https://kiko3d.wordpress.com/">Kirill Kovalevskiy</a><br>
+        Created by <a href="https://snehabelkhale.wordpress.com/" target="_blank">Sneha Belkhale</a> and <a href="https://kiko3d.wordpress.com/" target="_blank">Kirill Kovalevskiy</a><br>
         <!--
         Check our <a href="https://github.com/sneha-belkhale/gender-word-plots">command line tool</a> for generating scores for any word pair.
         -->

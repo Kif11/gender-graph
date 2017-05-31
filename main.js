@@ -41,9 +41,6 @@ var dm = {
   }
 };
 
-// Load all unique scores files on startup
-loadScores();
-
 function fit (x, min, max, a, b) {
   /*
       Source
@@ -131,12 +128,12 @@ function assignBins(words, model, numBins) {
 // Routes
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
-})
+});
 
 
 app.get('/test', function (req, res) {
   res.sendFile(__dirname + '/views/test.html');
-})
+});
 
 
 app.post('/getscores', function (req, res) {
@@ -153,11 +150,16 @@ app.post('/getscores', function (req, res) {
 
   // Send words back to client
   res.send(words);
-})
-// ROUTS END
+});
+// ROUTES END
+
+// End definitions. Begin execution
 
 let port = process.env.PORT || 8080;
 
+// Load all unique scores files on startup
+loadScores();
+
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
-})
+});
