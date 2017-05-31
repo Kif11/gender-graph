@@ -106,8 +106,24 @@ video {
 
 #input-container .input-item {
   box-sizing: border-box;
-  flex-basis: 24.5%;
   margin-bottom: 10px;
+}
+
+
+#add-word-btn {
+  flex-basis: 24.5%;
+}
+
+#new-word-input {
+  flex-basis: 24.5%;
+}
+
+#input-status-bar {
+  flex-basis: 24.5%;
+}
+
+.input-item #reset-btn {
+  flex-basis: 10%;
 }
 
 #input-container .status-bar {

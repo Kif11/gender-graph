@@ -15,18 +15,25 @@ spinner.hide();
 // Default number of bins
 var numBins = 8;
 
-// TODO(Kirill): This what called session cookies
-// it will be clear after user exit his brouser
-// See https://stackoverflow.com/questions/8733025/setting-persistent-cookies-with-javascript
-// for how to implement permanent cookies
-if (Cookies.get('userWords') !== undefined) {
-  console.log('Loading words from cookies');
-  userWords = JSON.parse(Cookies.get('userWords'));
-} else {
+if (localStorage.userWords === undefined) {
   defaultWords.split(' ').forEach((word) => {
-    userWords.push({word: word, score: -1, bin: -1});
+    var wordObj = {word: word, score: -1, bin: -1};
+    userWords.push(wordObj);
   });
+} else {
+  userWords = JSON.parse(localStorage.userWords);
 }
+
+// if (Cookies.get('userWords') !== undefined) {
+//   console.log('Loading words from cookies');
+//   userWords = JSON.parse(Cookies.get('userWords'));
+// } else {
+//   defaultWords.split(' ').forEach((word) => {
+//     var wordObj = {word: word, score: -1, bin: -1};
+//     userWords.push(wordObj);
+//   });
+//   Cookies.set('userWords', userWords);
+// }
 
 
 function fit (x, min, max, a, b) {
@@ -43,14 +50,14 @@ function printStatus(message) {
 
 
 function loadStarts() {
-  var btn = $('.input-item.button').addClass('btn-loading');
+  var btn = $('#add-word-btn').addClass('btn-loading');
   btn.text('Loading...');
   btn.prop("disabled", true);
 }
 
 
 function loadEnds() {
-  var btn = $('.input-item.button');
+  var btn = $('#add-word-btn');
   btn.text('Add Word');
   btn.removeClass('btn-loading');
   btn.prop("disabled", false);
@@ -84,7 +91,9 @@ function addWordsToGraph(words) {
       return;
     }
 
+    // Update user words
     userWords.push(i);
+
     // Select apropriate bin to place word into
     var binDiv = $(`#bin-${i.bin}`);
     binDiv.append(`<div class="graph-word ${i.word} new-word">${i.word}</div>`);
@@ -249,6 +258,15 @@ $("#add-word-btn").click(() => {
   userWordInput.val('');
 });
 
+$("#reset-btn").click(() => {
+  localStorage.removeItem("userWords");
+  userWords = [];
+  defaultWords.split(' ').forEach((word) => {
+    var wordObj = {word: word, score: -1, bin: -1};
+    userWords.push(wordObj);
+  });
+  updateModel(userWords, modelDropdown.val() || 'wiki');
+});
 
 // Triger add word button when user
 // press enter in the text input box
@@ -267,5 +285,6 @@ modelDropdown.change(() => {
 
 
 $(window).on("unload",() => {
-  Cookies.set('userWords', userWords);
+  // Cookies.set('userWords', userWords);
+  localStorage.setItem("userWords", JSON.stringify(userWords));
 });
