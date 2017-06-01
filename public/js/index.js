@@ -183,7 +183,6 @@ $( document ).ready(() => {
     mq1000.addListener(widthChange);
     mq500.addListener(widthChange);
     widthChange(mq1000);
-    widthChange(mq500);
   }
 
   // Media query change
