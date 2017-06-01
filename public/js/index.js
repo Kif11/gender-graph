@@ -2,11 +2,19 @@
 var userWords = [];
 
 // Dafault words
-var defaultWords = `hoped guru rule builder command drafted brilliant genius intelligent blonde fight police sociopath war leader thought arrested victim debate cocky coding power funny gossip shrill cold religion looks sewing pageant thigh lust fat videogames sports beautiful sexy curvy smart weak dramatic quiet butt villain heart emotional sex bitch love divorce breasts rape bossy wealth kitchen ugly working`;
+var defaultWords = `hoped guru rule builder command drafted brilliant genius
+  intelligent blonde fight police sociopath war leader thought arrested victim
+  debate cocky coding power funny gossip shrill cold religion looks sewing
+  pageant thigh lust fat videogames sports beautiful sexy curvy smart weak
+  dramatic quiet butt villain heart emotional sex bitch love divorce breasts
+  rape bossy wealth kitchen ugly working`;
 
 // This is the headers for 8 column and 4 columns graphs
-const levelNames8 = {0: 'so he', 1: 'very he', 2: 'he', 3: 'a bit he', 4: 'equality!', 5: 'a bit she', 6: 'she', 7: 'very she', 8: 'so she'};
-const levelNames4 = {0: 'so he', 1: 'he', 2: 'equality!', 3: 'she', 4: 'so she'};
+const levelNames = {
+  8: {0: 'so he', 1: 'very he', 2: 'he', 3: 'a bit he', 4: 'equality!', 5: 'a bit she', 6: 'she', 7: 'very she', 8: 'so she'},
+  4: {0: 'so he', 1: 'he', 2: 'equality!', 3: 'she', 4: 'so she'},
+  2: {0: 'he', 1: 'equality!', 2: 'she'}
+};
 
 // Spiner indicated loading of the model
 var spinner = $('.spinner');
@@ -23,17 +31,6 @@ if (localStorage.userWords === undefined) {
 } else {
   userWords = JSON.parse(localStorage.userWords);
 }
-
-// if (Cookies.get('userWords') !== undefined) {
-//   console.log('Loading words from cookies');
-//   userWords = JSON.parse(Cookies.get('userWords'));
-// } else {
-//   defaultWords.split(' ').forEach((word) => {
-//     var wordObj = {word: word, score: -1, bin: -1};
-//     userWords.push(wordObj);
-//   });
-//   Cookies.set('userWords', userWords);
-// }
 
 
 function fit (x, min, max, a, b) {
@@ -121,14 +118,8 @@ function initPlot(words) {
     var binColor = `rgb(${colorValue}, ${colorValue+100}, 240)`;
     graphCanvas.append(`<div class="word-bin" id=bin-${bin} style="background-color: ${binColor};"></div>`);
 
-    if (numBins === 8) {
-      var levelNames = levelNames8;
-    } else if (numBins === 4) {
-      var levelNames = levelNames4;
-    }
-
     // Append bin headers
-    $(`#bin-${bin}`).append(`<div class="bin-header">${levelNames[bin]}</div>`);
+    $(`#bin-${bin}`).append(`<div class="bin-header">${levelNames[numBins][bin]}</div>`);
   }
 
   // Append each word to corresponding bin
@@ -185,25 +176,34 @@ $( document ).ready(() => {
 
   $("#new-word-input").focus();
 
-  // media query event handler
+  // Media query event handler
   if (matchMedia) {
-    var mq = window.matchMedia("(min-width: 1000px)");
-    mq.addListener(widthChange);
-    widthChange(mq);
-  }
-  // media query change
-  function widthChange(mq) {
-    if (mq.matches) {
-      // window width is at least 1000px
-      numBins = 8;  // Update global bin count
-      updateModel(userWords, model);
-    } else {
-      // window width is less than 1000px
-      numBins = 4;
-      updateModel(userWords, model);
-    }
+    var mq1000 = window.matchMedia("(min-width: 1000px)");
+    var mq500 = window.matchMedia("(min-width: 500px)");
+    mq1000.addListener(widthChange);
+    mq500.addListener(widthChange);
+    widthChange(mq1000);
+    widthChange(mq500);
   }
 
+  // Media query change
+  function widthChange(mq) {
+    if (mq.media === "(min-width: 1000px)") {
+      if (mq.matches) {
+        // window width is at least 1000px
+        numBins = 8;  // Update global bin count
+        updateModel(userWords, model);
+      }
+    } else if (mq.media === "(min-width: 500px)") {
+      if (mq.matches) {
+        numBins = 4;
+        updateModel(userWords, model);
+      } else {
+        numBins = 2;
+        updateModel(userWords, model);
+      }
+    }
+  }
 
   $('.expander-btn').each((i, obj) => {
     var defaultText = obj.getAttribute('defaultText');
@@ -211,7 +211,6 @@ $( document ).ready(() => {
     obj.text = defaultText;
   });
 });
-
 
 // Register add word button callback
 $("#add-word-btn").click(() => {
