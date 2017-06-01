@@ -152,7 +152,7 @@ function updateModel (words, model) {
 */
 function handleExpandClick(item) {
   var elem = $(item);
-  var targetId = elem.attr('target');
+  var targetId = elem.attr('epanderTarget');
 
   if (targetId === undefined) {
     console.log('[-] Target id is not defined!');

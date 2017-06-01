@@ -91,11 +91,7 @@ video {
   animation-duration: 1s;
 }
 
-#graph-container {
-
-}
-
-.expander-btn {
+.expander-btn-container {
   margin-bottom: 10px;
 }
 

@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 
 // Serve static files
 app.use(express.static('public'))
+app.use(express.static('public/html'))
 
 // Store current selected model as a string
 var curMod = 'wiki';
@@ -41,6 +42,7 @@ var dm = {
   }
 };
 
+
 function fit (x, min, max, a, b) {
   /*
       Source
@@ -64,7 +66,6 @@ var isEmpty = function(obj) {
 
 
 function scoreToBin(score, min, max, numBins) {
-
   // Never user score bigger then max and min
   // This will place words to the firs or last bin
   if (score > max) {
@@ -78,13 +79,6 @@ function scoreToBin(score, min, max, numBins) {
 
 
 function loadScores() {
-  // var scoreFile = dm[model].wordScoresFile;
-  // if (isEmpty(dm[model].wordScores)) {
-  //   console.log('[+] Loading words scores for %s', model);
-  //   dm[model].wordScores = JSON.parse(fs.readFileSync(scoreFile, 'utf8'));
-  // } else {
-  //   console.log('[D] Words scores for %s already loaded', model);
-  // }
   for (model in dm) {
     var scoreFile = dm[model].wordScoresFile;
     console.log('[D] Loading %s', scoreFile);
@@ -125,20 +119,9 @@ function assignBins(words, model, numBins) {
 }
 
 
-// Routes
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
-});
-
-
-app.get('/test', function (req, res) {
-  res.sendFile(__dirname + '/views/test.html');
-});
-
-
+// Route for post request of geting user requested scores
+// This route recieve an array of form [{word_object}, {word_object}]
 app.post('/getscores', function (req, res) {
-  // console.log('Got from cliient: ', req.body);
-
   // Data from client
   let words = req.body.words;
   let model = req.body.model;
@@ -151,7 +134,7 @@ app.post('/getscores', function (req, res) {
   // Send words back to client
   res.send(words);
 });
-// ROUTES END
+
 
 // End definitions. Begin execution
 
