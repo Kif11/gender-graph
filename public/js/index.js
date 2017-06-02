@@ -23,6 +23,11 @@ spinner.hide();
 // Default number of bins
 var numBins = 8;
 
+var likesCount = 0;
+
+// NOTE(kirill): This is not cool but fine for now
+var mongolabUrl = 'https://api.mongolab.com/api/1/databases/codercat/collections/gendergraph?apiKey=cpVKwVtG0xhvVu9ujdBNOwm-673jmtSP'
+
 if (localStorage.userWords === undefined) {
   defaultWords.split(' ').forEach((word) => {
     var wordObj = {word: word, score: -1, bin: -1};
@@ -167,7 +172,54 @@ function handleExpandClick(item) {
 }
 
 
+function handleLikeBtnClick(item) {
+  var json = JSON.stringify({likes: 11});
+  var curLikes = parseInt($('#like-counter').text());
+  var liked = localStorage.liked;
+
+  if (liked) {
+    return // Already liked
+  }
+
+  $('#like-img').addClass('like-clicked');
+
+  $.ajax({
+    url: mongolabUrl,
+    data: JSON.stringify({'likes': curLikes + 1}),
+    type: 'PUT',
+    contentType: 'application/json'
+  });
+
+  $('#like-counter').text(curLikes + 1)
+
+  localStorage.liked = true;
+}
+
+
+function fetchLikes(callback) {
+  $.ajax( { url: mongolabUrl,
+      data: JSON.stringify({'likes' : 2}),
+      type: "GET",
+      contentType: "application/json",
+      success: function (data) {
+          var likes = data[0].likes;
+          console.log("Got from mLab: ", likes);
+          callback(likes);
+      }
+  });
+}
+
+
+function setLikes(likes) {
+  $("#like-counter").text(likes);
+}
+
 var modelDropdown = $("#model-dropdown");
+
+//
+// End of definition
+
+fetchLikes(setLikes);
 
 // When document finish loading
 $( document ).ready(() => {

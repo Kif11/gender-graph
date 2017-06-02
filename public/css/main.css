@@ -103,7 +103,7 @@ video {
 #input-container .input-item {
   box-sizing: border-box;
   margin-bottom: 10px;
-  flex-basis: 24.5%;
+  flex-basis: 23%;
 }
 
 
@@ -176,8 +176,46 @@ video {
   text-align: right;
 }
 
+#like-container {
+  display: flex;
+  margin-right: 10px;
+}
+
+#like-container .input-item {
+  flex: 1;
+}
+
+#like-container .like-elem {
+  padding-top: 3px;
+}
+
+#like-container img {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px 0 0;
+}
+
+.like-clicked {
+  animation: heart-anim .8s ease-in-out;
+}
+
 @keyframes btn-load-anim {
   50% {background-color: rgb(150, 250, 240);}
+}
+
+@keyframes heart-anim {
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.8, 1.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
 }
 
 @keyframes new-word-anim {
