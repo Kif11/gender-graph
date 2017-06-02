@@ -109,7 +109,7 @@ function assignBins(words, model, numBins) {
   var maxScore = dm[model].scoreRange[1];
 
   words.forEach((i) => {
-    if (i.score !== undefined) {
+    if (i.score !== -1) {
       i.bin = scoreToBin(i.score, minScore, maxScore, numBins);
     } else {
       i.bin = -1;  // Hidden bin

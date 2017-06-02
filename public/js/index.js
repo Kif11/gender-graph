@@ -138,11 +138,6 @@ function initPlot(words) {
 }
 
 
-function updateModel (words, model) {
-  fetchScores(words, model, initPlot);
-};
-
-
 /*
   This function handle show more text link callback
 */
@@ -243,15 +238,15 @@ $( document ).ready(() => {
       if (mq.matches) {
         // window width is at least 1000px
         numBins = 8;  // Update global bin count
-        updateModel(userWords, model);
+        fetchScores(userWords, model, initPlot);
       }
     } else if (mq.media === "(min-width: 500px)") {
       if (mq.matches) {
         numBins = 4;
-        updateModel(userWords, model);
+        fetchScores(userWords, model, initPlot);
       } else {
         numBins = 2;
-        updateModel(userWords, model);
+        fetchScores(userWords, model, initPlot);
       }
     }
   }
@@ -327,7 +322,7 @@ $("#reset-btn").click(() => {
     var wordObj = {word: word, score: -1, bin: -1};
     userWords.push(wordObj);
   });
-  updateModel(userWords, modelDropdown.val() || 'wiki');
+  fetchScores(userWords, modelDropdown.val() || 'wiki', initPlot);
 });
 
 // Triger add word button when user
@@ -342,7 +337,7 @@ $("#new-word-input").keyup((event) => {
 // Model dropdown event
 modelDropdown.change(() => {
   var newModel = modelDropdown.val();
-  updateModel(userWords, modelDropdown.val())
+  fetchScores(userWords, modelDropdown.val(), initPlot);
 });
 
 
