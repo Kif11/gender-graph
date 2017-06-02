@@ -199,6 +199,10 @@ video {
   animation: heart-anim .8s ease-in-out;
 }
 
+#resources {
+  line-height: 30px;
+}
+
 @keyframes btn-load-anim {
   50% {background-color: rgb(150, 250, 240);}
 }
