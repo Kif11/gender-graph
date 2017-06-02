@@ -103,19 +103,20 @@ video {
 #input-container .input-item {
   box-sizing: border-box;
   margin-bottom: 10px;
+  flex-basis: 24.5%;
 }
 
 
 #add-word-btn {
-  flex-basis: 24.5%;
+
 }
 
 #new-word-input {
-  flex-basis: 24.5%;
+
 }
 
 #input-status-bar {
-  flex-basis: 24.5%;
+
 }
 
 .input-item #reset-btn {
@@ -161,6 +162,18 @@ video {
 
 #credits {
   margin-top: 20px;
+}
+
+#buttom-control {
+  display: flex;
+}
+
+.buttom-control-column {
+  flex: 1;
+}
+
+.buttom-control-column.reset-btn {
+  text-align: right;
 }
 
 @keyframes btn-load-anim {
