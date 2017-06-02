@@ -2,12 +2,12 @@
 var userWords = [];
 
 // Dafault words
-var defaultWords = `hoped guru rule builder command drafted brilliant genius
-  intelligent blonde fight police sociopath war leader thought arrested victim
-  debate cocky coding power funny gossip shrill cold religion looks sewing
-  pageant thigh lust fat videogames sports beautiful sexy curvy smart weak
-  dramatic quiet butt villain heart emotional sex bitch love divorce breasts
-  rape bossy wealth kitchen ugly working`;
+var defaultWords = 'hoped guru rule builder command drafted brilliant genius \
+intelligent blonde fight police sociopath war leader thought arrested victim \
+debate cocky coding power funny gossip shrill cold religion looks sewing \
+pageant thigh lust fat videogames sports beautiful sexy curvy smart weak \
+dramatic quiet butt villain heart emotional sex bitch love divorce breasts \
+rape bossy wealth kitchen ugly working';
 
 // This is the headers for 8 column and 4 columns graphs
 const levelNames = {
