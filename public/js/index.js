@@ -221,8 +221,17 @@ $("#add-word-btn").click(() => {
     printStatus('please enter a word');
     return
   }
+
   var words = [];
+  var processedWords = {};
+
+  // Fore every word in space separated string of words
   inputString.split(' ').forEach((word) => {
+
+    // Ignore duplicate words
+    if (processedWords[word] === true) {
+      return
+    }
 
     // Convert word to lowercase
     word = word.toLowerCase();
@@ -246,6 +255,9 @@ $("#add-word-btn").click(() => {
 
     // Update user word list
     words.push({word: word, score: -1, bin: -1});
+
+    // Add it to processed words
+    processedWords[word] = true;
   });
 
   if (words.length >= 1) {
