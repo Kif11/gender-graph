@@ -239,6 +239,9 @@ $( document ).ready(() => {
         // window width is at least 1000px
         numBins = 8;  // Update global bin count
         fetchScores(userWords, model, initPlot);
+      } else {
+        numBins = 4;
+        fetchScores(userWords, model, initPlot);
       }
     } else if (mq.media === "(min-width: 500px)") {
       if (mq.matches) {
