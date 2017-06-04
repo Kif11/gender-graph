@@ -8,6 +8,7 @@ debate cocky coding power funny gossip shrill cold religion looks sewing \
 pageant thigh lust fat videogames sports beautiful sexy curvy smart weak \
 dramatic quiet butt villain heart emotional sex bitch love divorce breasts \
 rape bossy wealth kitchen ugly working';
+var defaultWordsSmall = 'brilliant genius intelligent blonde kitchen ugly working';
 
 // This is the headers for 8 column and 4 columns graphs
 const levelNames = {
@@ -198,7 +199,7 @@ function fetchLikes(callback) {
       contentType: "application/json",
       success: function (data) {
           var likes = data[0].likes;
-          console.log("Got from mLab: ", likes);
+          // console.log("Got from mLab: ", likes);
           callback(likes);
       }
   });
@@ -216,43 +217,43 @@ var modelDropdown = $("#model-dropdown");
 
 fetchLikes(setLikes);
 
+
 // When document finish loading
 $( document ).ready(() => {
 
   var model = modelDropdown.val() || 'wiki';
-
   $("#new-word-input").focus();
 
-  // Media query event handler
-  if (matchMedia) {
-    var mq1000 = window.matchMedia("(min-width: 1000px)");
-    var mq500 = window.matchMedia("(min-width: 500px)");
-    mq1000.addListener(widthChange);
-    mq500.addListener(widthChange);
-    widthChange(mq1000);
-  }
-
-  // Media query change
-  function widthChange(mq) {
-    if (mq.media === "(min-width: 1000px)") {
-      if (mq.matches) {
-        // window width is at least 1000px
-        numBins = 8;  // Update global bin count
-        fetchScores(userWords, model, initPlot);
-      } else {
-        numBins = 4;
-        fetchScores(userWords, model, initPlot);
-      }
-    } else if (mq.media === "(min-width: 500px)") {
-      if (mq.matches) {
-        numBins = 4;
-        fetchScores(userWords, model, initPlot);
-      } else {
-        numBins = 2;
-        fetchScores(userWords, model, initPlot);
-      }
+  // Do graph resizing on media quiry width event
+  enquire.register('(min-width: 1000px)', {
+    match : () => {
+      // console.log('Screen is more then 1000');
+      numBins = 8;  // Update global bin count
+      fetchScores(userWords, model, initPlot);
+    },
+    unmatch : () => {
+      // console.log('Screen is less then 1000');
+      numBins = 4;  // Update global bin count
+      fetchScores(userWords, model, initPlot);
     }
-  }
+  });
+
+  enquire.register('(min-width: 500px)', {
+    match : () => {
+      // console.log('Screen is more then 500');
+      numBins = 4;  // Update global bin count
+      fetchScores(userWords, model, initPlot);
+    }
+  });
+
+  enquire.register('(max-width: 500px)', {
+    match : () => {
+      // console.log('Screen is less then 500');
+      numBins = 2;  // Update global bin count
+      fetchScores(userWords, model, initPlot);
+    }
+  });
+  // End of media quired
 
   $('.expander-btn').each((i, obj) => {
     var defaultText = obj.getAttribute('defaultText');
