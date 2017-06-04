@@ -227,20 +227,15 @@ $( document ).ready(() => {
   // Do graph resizing on media quiry width event
   enquire.register('(min-width: 1000px)', {
     match : () => {
-      // console.log('Screen is more then 1000');
+      console.log('Screen is more then 1000');
       numBins = 8;  // Update global bin count
-      fetchScores(userWords, model, initPlot);
-    },
-    unmatch : () => {
-      // console.log('Screen is less then 1000');
-      numBins = 4;  // Update global bin count
       fetchScores(userWords, model, initPlot);
     }
   });
 
-  enquire.register('(min-width: 500px)', {
+  enquire.register('(min-width: 500px) and (max-width: 1000px)', {
     match : () => {
-      // console.log('Screen is more then 500');
+      console.log('Screen is more then 500');
       numBins = 4;  // Update global bin count
       fetchScores(userWords, model, initPlot);
     }
@@ -248,7 +243,7 @@ $( document ).ready(() => {
 
   enquire.register('(max-width: 500px)', {
     match : () => {
-      // console.log('Screen is less then 500');
+      console.log('Screen is less then 500');
       numBins = 2;  // Update global bin count
       fetchScores(userWords, model, initPlot);
     }
