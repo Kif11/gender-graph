@@ -38,9 +38,121 @@ if (localStorage.userWords === undefined) {
   userWords = JSON.parse(localStorage.userWords);
 }
 
+// Store current selected model as a string
+var curMod = 'wiki';
+// Data models
+var dm = {
+  wiki: {
+    descriptions: "English Wikipedia",
+    wordsCount: 71291,
+    creationDate: 'March 2006',
+    wordScoresFile: 'scores/wiki.json',
+    wordScores: {},  // This is to store word-score pair for all of the words in the selected datasets
+    scoreRange: [0.44, 0.59],  // Empirical values to provide even graph distribution
+  },
+  reddit: {
+    descriptions: "~1.7 billion publicly available Reddit comments",
+    wordsCount: 2255534,
+    creationDate: 'May 2015',
+    wordScoresFile: 'scores/reddit.json',
+    wordScores: {},
+    scoreRange: [-0.3, 0.3],
+  },
+  gnews: {
+    descriptions: "Google News articles",
+    wordsCount: -1,
+    creationDate: '',
+    wordScoresFile: 'scores/gnews.json',
+    wordScores: {},
+    scoreRange: [0.2, 0.84],
+  }
+};
 
 function fit (x, min, max, a, b) {
+  /*
+      Source
+        http://stackoverflow.com/questions/5294955/how-to-scale-down-a-range-of-numbers-with-a-known-min-and-max-value
+
+             (b-a)(x - min)
+      f(x) = --------------  + a
+              max - min
+
+      Where min, max are old min and old max
+      a,b - new min and new max
+
+  */
   return (((b-a) * (x-min)) / (max-min)) + a;
+}
+
+
+var isEmpty = function(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+
+function scoreToBin(score, min, max, numBins) {
+  // Never user score bigger then max and min
+  // This will place words to the firs or last bin
+  if (score > max) {
+    score = max;
+  } else if (score < min) {
+    score = min;
+  }
+  var score = fit(score, min, max, 0, numBins);
+  return Math.round(score);
+}
+
+
+function loadScores(callback) {
+  let curCount = 0;
+  for (model in dm) {
+    let scoreFile = dm[model].wordScoresFile;
+    let modelName = model;
+    console.log('Loading scores for %s', modelName);
+    
+    $.getJSON( `${scoreFile}`, data => {
+      dm[modelName].wordScores = data;
+      if (Object.keys(dm).length-1 == curCount) {
+        callback();
+      }
+      curCount++;
+    });
+  }
+}
+
+
+function scoreWords(words, model) {
+
+  for (let key in words) {
+    let i = words[key];
+
+    var score = dm[model].wordScores[i.word];
+    
+    if (score !== undefined) {
+      i.score = score;
+    } else {
+      i.score = -1;
+    }
+  }
+
+  return words
+}
+
+
+function assignBins(words, model, numBins) {
+
+  // Get our experimental min and max values for the dataset
+  var minScore = dm[model].scoreRange[0];
+  var maxScore = dm[model].scoreRange[1];
+
+  words.forEach((i) => {
+    if (i.score !== -1) {
+      i.bin = scoreToBin(i.score, minScore, maxScore, numBins);
+    } else {
+      i.bin = -1;  // Hidden bin
+    }
+  });
+  return words;
 }
 
 
@@ -69,18 +181,13 @@ function loadEnds() {
 
 function fetchScores (words, model, callback) {
   loadStarts();
-  jQuery.ajax({
-    url: 'getscores',
-    type: 'POST',
-    data: JSON.stringify({words: words, model: model, numBins: numBins}),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
-    success: function(data){
-        // console.log('[D] Got back from server: ', data);
-        loadEnds();
-        callback(data);
-    }
-  });
+ 
+  // Calculate scores and bins
+  words = scoreWords(words, model);
+  words = assignBins(words, model, numBins);
+
+  loadEnds();  
+  callback(words);
 }
 
 
@@ -221,40 +328,43 @@ fetchLikes(setLikes);
 // When document finish loading
 $( document ).ready(() => {
 
-  var model = modelDropdown.val() || 'wiki';
-  $("#new-word-input").focus();
+  loadScores(() => {
+    var model = modelDropdown.val() || 'wiki';
+    $("#new-word-input").focus();
 
-  // Do graph resizing on media quiry width event
-  enquire.register('(min-width: 1000px)', {
-    match : () => {
-      console.log('Screen is more then 1000');
-      numBins = 8;  // Update global bin count
-      fetchScores(userWords, model, initPlot);
-    }
-  });
+    // Do graph resizing on media quiry width event
+    enquire.register('(min-width: 1000px)', {
+      match : () => {
+        console.log('Screen is more then 1000');
+        numBins = 8;  // Update global bin count
+        fetchScores(userWords, model, initPlot);
+      }
+    });
 
-  enquire.register('(min-width: 500px) and (max-width: 1000px)', {
-    match : () => {
-      console.log('Screen is more then 500');
-      numBins = 4;  // Update global bin count
-      fetchScores(userWords, model, initPlot);
-    }
-  });
+    enquire.register('(min-width: 500px) and (max-width: 1000px)', {
+      match : () => {
+        console.log('Screen is more then 500');
+        numBins = 4;  // Update global bin count
+        fetchScores(userWords, model, initPlot);
+      }
+    });
 
-  enquire.register('(max-width: 500px)', {
-    match : () => {
-      console.log('Screen is less then 500');
-      numBins = 2;  // Update global bin count
-      fetchScores(userWords, model, initPlot);
-    }
-  });
-  // End of media quired
+    enquire.register('(max-width: 500px)', {
+      match : () => {
+        console.log('Screen is less then 500');
+        numBins = 2;  // Update global bin count
+        fetchScores(userWords, model, initPlot);
+      }
+    });
+    // End of media quired
 
-  $('.expander-btn').each((i, obj) => {
-    var defaultText = obj.getAttribute('defaultText');
-    // debugger;
-    obj.text = defaultText;
-  });
+    $('.expander-btn').each((i, obj) => {
+      var defaultText = obj.getAttribute('defaultText');
+      // debugger;
+      obj.text = defaultText;
+    });
+  }); // END OF LOAD SCORE
+  
 });
 
 // Register add word button callback
